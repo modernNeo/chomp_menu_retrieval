@@ -1,5 +1,11 @@
 import json
+import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from urllib.request import urlopen
+
+from apscheduler.schedulers.blocking import BlockingScheduler
 from bs4 import BeautifulSoup
 
 url = "https://www.chompveganeatery.com/meal-prep-service"
@@ -8,6 +14,31 @@ html = urlopen(url).read()
 soup = BeautifulSoup(html, features="html.parser")
 
 months = ['jan ', 'feb ', 'marc ', 'apr ', 'may ', 'june ', 'july ', 'aug ', 'sept ', 'oct ', 'nov ', 'dec ']
+
+
+def send_email(subject: str = None, body: str = None):
+    from_person_name = 'CHOMP'
+    from_person_email = os.environ['FROM_EMAIL']
+    password = f"{os.environ['BESTBUY_STEELBOOKS_PASSWORD']}"
+    to_person_email = os.environ['TO_EMAIL']
+
+    print("Setting up MIMEMultipart object")
+    msg = MIMEMultipart()
+    msg['From'] = from_person_name + " <" + from_person_email + ">"
+    msg['To'] = " <" + to_person_email + ">"
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'html'))
+
+    print("Connecting to smtp.gmail.com:587")
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.connect("smtp.gmail.com", 587)
+    server.ehlo()
+    server.starttls()
+    print("Logging into your gmail")
+    server.login(from_person_email, password)
+    print("Sending email...")
+    server.send_message(from_addr=from_person_email, to_addrs=to_person_email, msg=msg)
+    server.close()
 
 
 def get_entries(menu_data, start_printing):
@@ -43,14 +74,21 @@ def get_entries(menu_data, start_printing):
 
 # f = open("/home/jace/siteData")
 # json_file = json.load(f)
-for script in soup(["script"]):
-    if "BOOTSTRAP_STATE_" in script.next:
-        # print("".join(get_entries(json_file, False)[0]))
-        print(
-            "".join(
-                get_entries(
-                    json.loads(script.contents[0].strip().replace("window.__BOOTSTRAP_STATE__ = ", "")[:-1]),
-                    False
-                )[0]
+def poll_chomp_menu():
+    for script in soup(["script"]):
+        if "BOOTSTRAP_STATE_" in script.next:
+            send_email(
+                "CHOMP_MENU",
+                body="".join(
+                    get_entries(
+                        json.loads(script.contents[0].strip().replace("window.__BOOTSTRAP_STATE__ = ", "")[:-1]),
+                        False
+                    )[0]
+                ).replace("\n", "<br>")
             )
-        )
+
+
+if __name__ == '__main__':
+    scheduler = BlockingScheduler()
+    scheduler.add_job(poll_chomp_menu, 'cron', day_of_week='thu', hour='3')
+    scheduler.start()

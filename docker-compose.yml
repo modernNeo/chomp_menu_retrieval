@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  chomp:
+    env_file: chomp.env
+    build:
+      context: .
+      dockerfile:  Dockerfile
+    container_name: chomp
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
