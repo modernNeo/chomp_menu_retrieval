@@ -24,7 +24,7 @@ pipeline {
                         echo 'BESTBUY_STEELBOOKS_PASSWORD='"'"${BESTBUY_STEELBOOKS_PASSWORD}"'" > chomp.env
                         echo 'FROM_EMAIL='"'"${FROM_EMAIL}"'" > chomp.env
                         echo 'TO_EMAIL='"'"${TO_EMAIL}"'" > chomp.env
-                        docker-compose --force-recreate -f docker-compose.yml up -d 
+                        docker-compose -f docker-compose.yml --force-recreate up -d 
                     \'"""
                 }
             }
