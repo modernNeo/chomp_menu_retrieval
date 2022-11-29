@@ -10,9 +10,6 @@ from bs4 import BeautifulSoup
 
 url = "https://www.chompveganeatery.com/meal-prep-service"
 
-html = urlopen(url).read()
-soup = BeautifulSoup(html, features="html.parser")
-
 months = ['jan ', 'feb ', 'marc ', 'apr ', 'may ', 'june ', 'july ', 'aug ', 'sept ', 'oct ', 'nov ', 'dec ']
 
 
@@ -75,6 +72,8 @@ def get_entries(menu_data, start_printing):
 # f = open("/home/jace/siteData")
 # json_file = json.load(f)
 def poll_chomp_menu():
+    html = urlopen(url).read()
+    soup = BeautifulSoup(html, features="html.parser")
     for script in soup(["script"]):
         if "BOOTSTRAP_STATE_" in script.next:
             send_email(
@@ -90,5 +89,5 @@ def poll_chomp_menu():
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
-    scheduler.add_job(poll_chomp_menu, 'cron', day_of_week='thu', hour='17')
+    scheduler.add_job(poll_chomp_menu, 'cron', day_of_week='mon', hour='1')
     scheduler.start()
