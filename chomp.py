@@ -60,9 +60,12 @@ def get_entries(menu_data, start_printing):
         return [], start_printing
 
     for month in months:
-        if month in menu_data.lower():
-            start_printing = True
-            break
+        try:
+            if month in menu_data.lower():
+                start_printing = True
+                break
+        except Exception:
+            pass
     if start_printing:
         return menu_data, start_printing
     else:
