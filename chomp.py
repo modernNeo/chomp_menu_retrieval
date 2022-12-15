@@ -92,5 +92,5 @@ def poll_chomp_menu():
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
-    scheduler.add_job(poll_chomp_menu, 'cron', day_of_week='mon', hour='1')
+    scheduler.add_job(poll_chomp_menu, 'cron', day_of_week='mon', hour='1', misfire_grace_time=600)
     scheduler.start()
