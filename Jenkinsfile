@@ -22,8 +22,8 @@ pipeline {
                         export FROM_EMAIL=${FROM_EMAIL};
                         export TO_EMAIL=${TO_EMAIL};
                         echo 'BESTBUY_STEELBOOKS_PASSWORD='"'"${BESTBUY_STEELBOOKS_PASSWORD}"'" > chomp.env
-                        echo 'FROM_EMAIL='"'"${FROM_EMAIL}"'" > chomp.env
-                        echo 'TO_EMAIL='"'"${TO_EMAIL}"'" > chomp.env
+                        echo 'FROM_EMAIL='"'"${FROM_EMAIL}"'" >> chomp.env
+                        echo 'TO_EMAIL='"'"${TO_EMAIL}"'" >> chomp.env
                         docker-compose -f docker-compose.yml up -d  --force-recreate --build
                     \'"""
                 }
